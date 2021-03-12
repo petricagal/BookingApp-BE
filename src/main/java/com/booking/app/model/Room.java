@@ -1,8 +1,10 @@
 package com.booking.app.model;
 
-import javax.persistence.Entity;
-import java.util.Date;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
 public class Room implements Comparable<Object>{

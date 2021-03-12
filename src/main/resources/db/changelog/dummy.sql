@@ -1,2 +1,0 @@
-CREATE TABLE dummy (
-        id INT AUTO_INCREMENT PRIMARY KEY)

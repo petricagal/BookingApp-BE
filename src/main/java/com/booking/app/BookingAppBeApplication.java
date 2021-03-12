@@ -19,8 +19,6 @@ public class BookingAppBeApplication implements CommandLineRunner {
 	@Autowired
 	UserRepository users;
 
-
-
 	@Autowired
 	BookingRepository bookings;
 

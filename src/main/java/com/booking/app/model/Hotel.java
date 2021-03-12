@@ -1,9 +1,11 @@
 package com.booking.app.model;
 
-import jdk.jfr.Category;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import javax.persistence.Entity;
-import javax.xml.stream.events.Comment;
+
+import javax.persistence.*;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -18,9 +20,6 @@ public class Hotel {
     private int rating;
     private boolean status;
 
-    @ManyToOne
-    private Category category;
-
     @JsonBackReference
     @ManyToOne
     private User manager;
@@ -33,7 +32,7 @@ public class Hotel {
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy="hotel", orphanRemoval = true)
     @MapKeyColumn(name="id")
-    private Map<Long, Comment> comments = new HashMap<Long, Comment>();
+    private Map<Long, com.booking.app.model.Comment> comments = new HashMap<Long, com.booking.app.model.Comment>();
 
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy="hotel", orphanRemoval = true)
@@ -42,11 +41,10 @@ public class Hotel {
 
     public Hotel() {}
 
-    public Hotel(String name, String address, int rating, Category category, boolean status) {
+    public Hotel(String name, String address, int rating, boolean status) {
         this.name = name;
         this.address = address;
         this.rating = rating;
-        this.category = category;
         this.status = false;
     }
 
@@ -54,16 +52,8 @@ public class Hotel {
         return address;
     }
 
-    public Category getCategory(){
-        return category;
-    }
-
-    public Map<Long, Comment> getComments() {
+    public Map<Long, com.booking.app.model.Comment> getComments() {
         return comments;
-    }
-
-    public long getId() {
-        return id;
     }
 
     public Map<Long, Image> getImages() {
@@ -90,9 +80,6 @@ public class Hotel {
         this.address = address;
     }
 
-    public void setCategory(Category category){
-        this.category = category;
-    }
 
     public void setComments(Map<Long, Comment> comments) {
         this.comments = comments;
@@ -124,7 +111,7 @@ public class Hotel {
 
     @Override
     public String toString() {
-        return "Id: " + getId() + "\nName: " + getName() + "\nAddress: " + getAddress() + "\nRating: " + getRating() + "\nCategory: " + category.getName() + "\nManager: " + getManager();
+        return "Id: " + getId() + "\nName: " + getName() + "\nAddress: " + getAddress() + "\nRating: " + getRating() ;
     }
 
     public boolean isStatus() {
@@ -135,4 +122,11 @@ public class Hotel {
         this.status = status;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
 }

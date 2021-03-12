@@ -1,15 +1,11 @@
 package com.booking.app.controller;
 
 import com.booking.app.model.Comment;
-import com.booking.app.model.CustomUserDetail;
 import com.booking.app.model.Hotel;
-import com.booking.app.model.User;
 import com.booking.app.repository.CommentRepository;
 import com.booking.app.repository.HotelRepository;
 import com.booking.app.repository.UserRepository;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;

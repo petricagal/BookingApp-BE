@@ -1,12 +1,6 @@
 package com.booking.app.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 @Entity
 public class User {
@@ -16,49 +10,23 @@ public class User {
 
     private String name;
 
+
     @Column(unique = true)
     private String username;
 
     private String password;
-    private String email;
-
-    @JsonManagedReference
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
-    @MapKeyColumn(name = "id")
-    private Map<Long, Comment> comments = new HashMap<Long, Comment>();
-
-    @JsonManagedReference
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "manager", orphanRemoval = true)
-    private Set<Hotel> hotels = new HashSet<Hotel>();
 
     public User() {
     }
 
-    public User(String name, String username, String password, String email) {
+    public User(String name,  String username, String password) {
         this.name = name;
         this.username = username;
         this.setPassword(password);
-        this.setEmail(email);
-    }
-
-    public Iterable<Comment> getComments() {
-        return comments.values();
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Set<Hotel> getHotels() {
-        return hotels;
     }
 
     public long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getPassword() {
@@ -69,31 +37,13 @@ public class User {
         return username;
     }
 
-    public void setComments(Map<Long, Comment> comments) {
-        this.comments = comments;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setHotels(Set<Hotel> hotels) {
-        this.hotels = hotels;
-    }
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 }
