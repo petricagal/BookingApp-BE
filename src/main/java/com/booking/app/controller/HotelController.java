@@ -3,10 +3,7 @@ package com.booking.app.controller;
 import com.booking.app.model.*;
 import com.booking.app.repository.*;
 import com.booking.app.util.HotelNotFoundException;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -130,14 +127,6 @@ public class HotelController {
         return "redirect:/hotels";
     }
 
-    // ?????
-    @RequestMapping(value = "{id}/approve", method = RequestMethod.GET)
-    public String approve(@PathVariable("id") long id, Model model) {
-        Hotel h = hotels.findOne(id);
-        h.setStatus(true);
-        hotels.save(h);
-        return "redirect:/admin";
-    }
 
     @RequestMapping(value = "{id}/upload", method = RequestMethod.POST)
     public String uploadImage(@PathVariable("id") long id, Model model, @RequestParam("files") MultipartFile files[]) {
