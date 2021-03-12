@@ -1,10 +1,7 @@
 package com.booking.app.controller;
 
 import com.booking.app.model.*;
-import com.booking.app.repository.BookingRepository;
-import com.booking.app.repository.RoomRepository;
-import com.booking.app.repository.RoomTypeRepository;
-import com.booking.app.repository.UserRepository;
+import com.booking.app.repository.*;
 import com.booking.app.util.BookingNotFoundException;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +34,6 @@ public class BookingController {
     RoomTypeRepository roomTypes;
 
     @RequestMapping(method= RequestMethod.GET)
-    @AllowedForHotelManager
     public String index(Model model) {
         User user = getCurrentUser();
         List<Booking> books = new ArrayList<Booking>();
@@ -107,14 +103,11 @@ public class BookingController {
     }
 
     @RequestMapping(value="/new/{hotel_id}", method=RequestMethod.GET)
-    @AllowedForSystemUsers
     public String bookRoom(Model model, @PathVariable("hotel_id") long hotel_id, @ModelAttribute("booking") Booking booking, @ModelAttribute("numberRooms") int numberRooms,
-                           @ModelAttribute("roomType") long roomType, Authentication authentication){
+                           @ModelAttribute("roomType") long roomType){
 
         RoomType rt = roomTypes.findOne(roomType);
         List<Date> dates = getDates(booking);
-
-        booking.setUser(getCurrentUser());
         Hotel hotel = hotels.findOne(hotel_id);
         Map<Long,Room> roomsFromHotel = hotel.getRooms();
         List<Room> rooms_available = new ArrayList<Room>();
@@ -148,15 +141,6 @@ public class BookingController {
         bookings.save(booking);
         model.addAttribute("bookings", bookings.findAll());
 
-        CustomUserDetail principal = (authentication != null) ? (CustomUserDetail) authentication.getPrincipal() : null;
-        if(principal != null)
-        {
-            String a = ((SimpleGrantedAuthority) principal.getAuthorities().iterator().next()).getAuthority();
-
-            if (a.equals("ROLE_USER") || a.equals("ROLE_COMMENT_MODERATOR") || a.equals("ROLE_ADMIN"))
-                return "redirect:/users/me";
-        }
-
         return "redirect:/bookings";
     }
 
@@ -169,7 +153,6 @@ public class BookingController {
     }
 
     @RequestMapping(value="/search", method=RequestMethod.POST)
-    @AllowedForSystemUsers
     public String searchRooms(@ModelAttribute Booking booking, Model model, @RequestParam("roomType") long roomType, @RequestParam("numberRooms") int numberRooms) {
 
         RoomType rt = roomTypes.findOne(roomType);
@@ -276,7 +259,6 @@ public class BookingController {
     }
 
     @RequestMapping(value="/{booking_id}/approve", method=RequestMethod.GET)
-    @AllowedForApprovingBookings
     public String approveBooking(Model model, @PathVariable("booking_id") long booking_id){
 
         Booking booking = bookings.findOne(booking_id);
@@ -290,8 +272,7 @@ public class BookingController {
     }
 
     @RequestMapping(value="/{booking_id}/remove", method=RequestMethod.GET)
-    @AllowedForRemovingBookings
-    public String removeBooking(Model model, @PathVariable("booking_id") long booking_id, Authentication authentication){
+    public String removeBooking(Model model, @PathVariable("booking_id") long booking_id){
         Booking booking = bookings.findOne(booking_id);
 
         if(booking == null)
@@ -314,24 +295,6 @@ public class BookingController {
 
         bookings.delete(booking);
 
-        CustomUserDetail principal = (authentication != null) ? (CustomUserDetail) authentication.getPrincipal() : null;
-
-        if(principal != null)
-        {
-            String a = ((SimpleGrantedAuthority) principal.getAuthorities().iterator().next()).getAuthority();
-
-            if (a.equals(("ROLE_USER")))
-                return "redirect:/users/me";
-        }
-
-        return "redirect:/bookings";
-    }
-
-    private User getCurrentUser(){
-        org.springframework.security.core.Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetail myUser= (CustomUserDetail) auth.getPrincipal();
-        return myUser.getUser();
-    }
 
 
 }

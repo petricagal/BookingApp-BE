@@ -1,15 +1,21 @@
 package com.booking.app.controller;
 
 import com.booking.app.model.Comment;
+import com.booking.app.model.CustomUserDetail;
 import com.booking.app.model.Hotel;
+import com.booking.app.model.User;
 import com.booking.app.repository.CommentRepository;
 import com.booking.app.repository.HotelRepository;
 import com.booking.app.repository.UserRepository;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Date;
 
@@ -27,7 +33,6 @@ public class CommentController {
     UserRepository users;
 
     @RequestMapping(value="/{id}/comments/{comment_id}/reply", method = RequestMethod.POST)
-    @AllowedForApprovedComments
     public String createReply(@ModelAttribute Comment reply, @PathVariable("id") long id,
                               Model model, @PathVariable("comment_id") long comment_id){
 
@@ -35,7 +40,6 @@ public class CommentController {
         Comment comment = comments.findOne(comment_id);
         Date date = new Date();
         reply.setDate(date);
-        reply.setUser(getCurrentUser());
         reply.setHotel(hotel);
         reply.setAnswer(true);
         reply.setStatus(false);
@@ -51,7 +55,6 @@ public class CommentController {
 
         Date date = new Date();
         comment.setDate(date);
-        comment.setUser(getCurrentUser());
         comment.setHotel(hotel);
         comments.save(comment);
         return "redirect:/hotels/{id}";
@@ -77,8 +80,7 @@ public class CommentController {
         return "comments/hotel-comments";
     }
 
-    @RequestMapping(value="{id}/comments/{id_comment}/edit", method=RequestMethod.GET)
-    @AllowedForManageComment
+    @RequestMapping(value="{id}/comments/{id_comment}/edit", method= RequestMethod.GET)
     public String editComment(@PathVariable("id") long id, @PathVariable("id_comment") long id_comment, Model model) {
 
         Hotel hotel = hotels.findOne(id);
@@ -88,14 +90,12 @@ public class CommentController {
     }
 
     @RequestMapping(value="{id}/comments/{id_comment}/remove", method=RequestMethod.GET)
-    @AllowedForManageComment
     public String removeComment(@PathVariable("id") long id, @PathVariable("id_comment") long id_comment, Model model){
         comments.delete(id_comment);
         return "redirect:/comments/moderation";
     }
 
     @RequestMapping(value="{id}/comments/{id_comment}/approve", method=RequestMethod.GET)
-    @AllowedForCommentModerator
     public String approveComment(@PathVariable("id") long id, @PathVariable("id_comment") long id_comment, Model model) {
         Comment comment = comments.findOne(id_comment);
         comment.setStatus(true);
@@ -103,10 +103,5 @@ public class CommentController {
         return "redirect:/comments/moderation";
     }
 
-    private User getCurrentUser(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetail myUser= (CustomUserDetail) auth.getPrincipal();
-        return myUser.getUser();
-    }
 
 }

@@ -55,10 +55,7 @@ public class Comment {
         return hotel;
     }
 
-    @Id
-    public long getId() {
-        return id;
-    }
+
 
     public boolean getStatus() {
         return status;
