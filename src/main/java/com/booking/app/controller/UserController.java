@@ -36,7 +36,5 @@ public class UserController {
         return new ResponseEntity<>(String.format("User " + id, " has been deleted!"), HttpStatus.ACCEPTED);
 
     }
-
-
 }
 
